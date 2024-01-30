@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auctions")
+@RequestMapping("/auction")
 public class AuctionController {
     @Autowired
     private AuctionService auctionService;
+
     @PostMapping("/{productId}/end")
     public ResponseEntity<Auction> endAuction(@PathVariable long productId){
         Auction auction = auctionService.endAuction(productId);

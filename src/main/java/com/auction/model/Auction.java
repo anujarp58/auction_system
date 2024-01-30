@@ -19,7 +19,7 @@ public class Auction {
         private long productId;
         private long bidId;
         private boolean ended;
-        private String winner;
+        private long winner;
         private long winnersBidAmount;
 
 }

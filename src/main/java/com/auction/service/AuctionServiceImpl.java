@@ -9,8 +9,11 @@ import com.auction.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuctionServiceImpl implements AuctionService{
@@ -25,22 +28,23 @@ public class AuctionServiceImpl implements AuctionService{
 
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isEmpty()) {
-            throw new IllegalArgumentException("Product not found with ID: " + productId);
+            throw new IllegalArgumentException("Product not available for auction " + productId);
         }
 
         Product product = optionalProduct.get();
+
         List<Bid> allBids = bidRepository.findAllBidsByProductId(product.getProductId());
         Bid winningBid = determineWinningBid(allBids);
         Auction auction = new Auction();
         auction.setProductId(winningBid.getProductId());
-        auction.setBidId(winningBid.getBidId());
+        //auction.setBidId(winningBid.getBidId());
         auction.setWinnersBidAmount(winningBid.getAmount());
-        auction.setWinner(winningBid.getBuyer());
+        auction.setWinner(winningBid.getBidId());
         auction.setEnded(true);
         auctionRepository.save(auction);
         return auction;
     }
-
+    /*
     private Bid determineWinningBid(List<Bid> allBids) {
         if (!allBids.isEmpty()) {
             allBids.sort((bid1, bid2) -> Double.compare(bid2.getAmount(), bid1.getAmount()));
@@ -48,28 +52,27 @@ public class AuctionServiceImpl implements AuctionService{
         } else {
             return null;
         }
-    }
+    }*/
 
-    /*
-    public List<Bid> determineWinningBids(List<Bid> allBids, double minimumBid) {
-        List<Bid> winningBids = new ArrayList<>();
+
+    public Bid determineWinningBid(List<Bid> allBids) {
+        List<Bid> sameAmountBids = new ArrayList<>();
 
         if (!allBids.isEmpty()) {
-            allBids.sort(Comparator.comparingDouble(Bid::getAmount).reversed()
-                    .thenComparing(Bid::getTimestamp).reversed());
+            allBids.sort(Comparator.comparingDouble(Bid::getAmount).reversed());
             double highestAmount = allBids.get(0).getAmount();
 
-            List<Bid> highestBids = allBids.stream()
+           sameAmountBids = allBids.stream()
                     .filter(bid -> bid.getAmount() == highestAmount)
                     .collect(Collectors.toList());
 
-            if (highestBids.size() >= 2) {
-                highestBids.sort(Comparator.comparing(Bid::getTimestamp).reversed());
-                winningBids.add(highestBids.get(0));
-            } else {
-                winningBids.add(allBids.get(0));
-            }
+           if (sameAmountBids.size() >= 2) {
+                sameAmountBids.sort(Comparator.comparing(Bid::getTimestamp));
+                sameAmountBids.get(0);
+           } else {
+                sameAmountBids.get(0);
+           }
         }
-        return winningBids;
-    }*/
+        return  sameAmountBids.get(0);
+    }
 }
