@@ -9,10 +9,8 @@ import com.auction.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class AuctionServiceImpl implements AuctionService{
@@ -25,30 +23,34 @@ public class AuctionServiceImpl implements AuctionService{
     @Override
     public Auction endAuction(long productId) {
 
-        Product product = productRepository.findById(productId).get();
-        List<Bid> allBids = bidRepository.findAllBidsByProductId(productId);
-        //check if auction has ended
-        // if both are same check the timestamp
-        List<Bid> winningBid = determineWinningBids(allBids, product.getMinimumBid());
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isEmpty()) {
+            throw new IllegalArgumentException("Product not found with ID: " + productId);
+        }
+
+        Product product = optionalProduct.get();
+        List<Bid> allBids = bidRepository.findAllBidsByProductId(product.getProductId());
+        Bid winningBid = determineWinningBid(allBids);
         Auction auction = new Auction();
-        auction.setProductId(winningBid.get(0).getProductId());
-        auction.setBidId(winningBid.get(0).getBidId());
-        auction.setWinnersBidAmount(winningBid.get(0).getAmount());
-        auction.setWinner(winningBid.get(0).getBuyer());
+        auction.setProductId(winningBid.getProductId());
+        auction.setBidId(winningBid.getBidId());
+        auction.setWinnersBidAmount(winningBid.getAmount());
+        auction.setWinner(winningBid.getBuyer());
         auction.setEnded(true);
         auctionRepository.save(auction);
         return auction;
     }
-    /*
-    private Bid determineWinningBid(List<Bid> allBids, double minimumBid) {
+
+    private Bid determineWinningBid(List<Bid> allBids) {
         if (!allBids.isEmpty()) {
             allBids.sort((bid1, bid2) -> Double.compare(bid2.getAmount(), bid1.getAmount()));
             return allBids.get(0);
         } else {
             return null;
         }
-    }*/
+    }
 
+    /*
     public List<Bid> determineWinningBids(List<Bid> allBids, double minimumBid) {
         List<Bid> winningBids = new ArrayList<>();
 
@@ -69,5 +71,5 @@ public class AuctionServiceImpl implements AuctionService{
             }
         }
         return winningBids;
-    }
+    }*/
 }

@@ -15,7 +15,7 @@ public class AuctionController {
     @Autowired
     private AuctionService auctionService;
     @PostMapping("/{productId}/end")
-    public ResponseEntity<Auction> endAuction( @PathVariable long productId){
+    public ResponseEntity<Auction> endAuction(@PathVariable long productId){
         Auction auction = auctionService.endAuction(productId);
         return  ResponseEntity.ok(auction);
     }
