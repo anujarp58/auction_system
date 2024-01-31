@@ -18,14 +18,17 @@ The use-cases which identify users should store only a token (issued by the “U
 
 Use-Cases
 •	As a Seller, I want to be able to register a new product for auction and specify a minimum bid
+
   Seller token passed in headers as x-token generated from users server
   REST endpoint: http://localhost:8090/product/register
 
 •	As a Buyer, I want to bid in an auction any number of times
+
   Buyer token passed in headers as x-token generated from users server
   REST endpoint: http://localhost:8090/bid/{productId}?bidAmount=110
 
 •	As a Seller, I want to be able to end the action and see the winner and their bid
+
   Seller token passed in headers as x-token generated from users server
   REST endpoint: http://localhost:8090/auction/{productId}/end
 
