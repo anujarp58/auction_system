@@ -1,5 +1,6 @@
 package com.auction.service;
 
+import com.auction.exception.InvaildBidAmountException;
 import com.auction.model.Bid;
 import com.auction.model.Product;
 import com.auction.repository.BidRepository;
@@ -16,12 +17,17 @@ public class BidServiceImpl implements BidService {
     @Autowired
     ProductRepository productRepository;
     @Override
-    public Bid placeBid(String token, long productId, long amount) {
+    public Bid  placeBid(String token, long productId, long amount) {
 
         Optional<Product> product = productRepository.findById(productId);
         if (product.isPresent() && amount < product.get().getMinimumBid()) {
-            throw new IllegalArgumentException("Bid amount is less than the minimum bid");
+            throw new InvaildBidAmountException("Bid amount is less than the minimum bid");
         }
+        Bid bid = createBid(token, productId, amount);
+        return bid;
+    }
+
+    private Bid createBid(String token, long productId, long amount) {
         Bid bid = new Bid();
         bid.setBuyer(token);
         bid.setAmount(amount);
@@ -29,4 +35,5 @@ public class BidServiceImpl implements BidService {
         bidRepository.save(bid);
         return bid;
     }
+
 }

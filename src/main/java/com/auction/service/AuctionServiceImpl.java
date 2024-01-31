@@ -1,5 +1,6 @@
 package com.auction.service;
 
+import com.auction.exception.ProductNotAvailable;
 import com.auction.model.Auction;
 import com.auction.model.Bid;
 import com.auction.model.Product;
@@ -28,32 +29,24 @@ public class AuctionServiceImpl implements AuctionService{
 
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isEmpty()) {
-            throw new IllegalArgumentException("Product not available for auction " + productId);
+            throw new ProductNotAvailable("Item not available for auction " + productId);
         }
-
         Product product = optionalProduct.get();
-
         List<Bid> allBids = bidRepository.findAllBidsByProductId(product.getProductId());
         Bid winningBid = determineWinningBid(allBids);
-        Auction auction = new Auction();
-        auction.setProductId(winningBid.getProductId());
-        //auction.setBidId(winningBid.getBidId());
-        auction.setWinnersBidAmount(winningBid.getAmount());
-        auction.setWinner(winningBid.getBidId());
-        auction.setEnded(true);
+        Auction auction = saveAuction(winningBid);
         auctionRepository.save(auction);
         return auction;
     }
-    /*
-    private Bid determineWinningBid(List<Bid> allBids) {
-        if (!allBids.isEmpty()) {
-            allBids.sort((bid1, bid2) -> Double.compare(bid2.getAmount(), bid1.getAmount()));
-            return allBids.get(0);
-        } else {
-            return null;
-        }
-    }*/
 
+    private Auction saveAuction(Bid winningBid) {
+        Auction auction = new Auction();
+        auction.setProductId(winningBid.getProductId());
+        auction.setWinnersBidAmount(winningBid.getAmount());
+        auction.setWinner(winningBid.getBidId());
+        auction.setEnded(true);
+        return auction;
+    }
 
     public Bid determineWinningBid(List<Bid> allBids) {
         List<Bid> sameAmountBids = new ArrayList<>();

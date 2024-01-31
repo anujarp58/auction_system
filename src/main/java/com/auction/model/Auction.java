@@ -17,7 +17,6 @@ public class Auction {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private long auctionId;
         private long productId;
-        private long bidId;
         private boolean ended;
         private long winner;
         private long winnersBidAmount;

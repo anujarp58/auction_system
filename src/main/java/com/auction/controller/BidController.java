@@ -15,6 +15,7 @@ public class BidController {
     private TokenValidator tokenValidator;
     @Autowired
     private BidService bidService;
+
     @PostMapping("/{productId}")
     public ResponseEntity<Bid> placeBid(@RequestHeader("x-token") String token,
                                         @PathVariable long productId,
