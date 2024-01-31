@@ -6,7 +6,7 @@ Email Address: anujap58@gmail.com
 
 Reference Links: stackoverflow | geeksforgeeks
 
-Description:a platform for running blind auctions (https://en.wikipedia.org/wiki/First-price_sealed-bid_auction).
+Description:A platform for running blind auctions (https://en.wikipedia.org/wiki/First-price_sealed-bid_auction).
 
 Buyers are shown products that they can bid for, and a minimum price is set by the seller. 
 The buyer can submit any number of bids, which will be rejected if they fall below the seller's minimum price.  
@@ -16,12 +16,15 @@ GDPR requires that PII (TODO) is stored through an independent “Users” serve
 The use-cases which identify users should store only a token (issued by the “Users” server)
 
 
-Use-Cases
+Use-Cases:
+
 •	As a Seller, I want to be able to register a new product for auction and specify a minimum bid
 
   Seller token passed in headers as x-token generated from users server
   
   REST endpoint: http://localhost:8090/product/register
+  
+  REST endpoint: http://localhost:8090/product/list
 
 •	As a Buyer, I want to bid in an auction any number of times
 
@@ -34,6 +37,14 @@ Use-Cases
   Seller token passed in headers as x-token generated from users server
   
   REST endpoint: http://localhost:8090/auction/{productId}/end
+
+Limited to:
+
+1.Product,Bid, and Auction entities limited to only required attributes.
+
+2.Users are validated w.r.t to token expiryDate i.e validated for 1 hr from the time its generated, latter can add additional validation parameters.
+
+
 
 
 Dependency Version Description
